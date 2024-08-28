@@ -1,4 +1,10 @@
 <?php
+
+    // check if old session is still open
+    if (session_status() == PHP_SESSION_ACTIVE) {
+        session_destroy();
+    }
+
     // database connection
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
