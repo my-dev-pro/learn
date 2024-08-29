@@ -11,22 +11,36 @@
         $email = $_POST['email'];
         $password = $_POST['password'];
 
-        $dbConnection = new mysqli('172.18.0.3', 'root', 'root', 'quiz');
+        // using instance of mysqli class
+        /*
+            $dbConnection = new mysqli('172.18.0.3', 'root', 'root', 'quiz');
 
-        $query = $dbConnection->prepare("SELECT `id`, `password` FROM users WHERE email = ?");
-        $query->bind_param('s', $email);
+            $query = $dbConnection->prepare("SELECT `id`, `password` FROM users WHERE email = ?");
+            $query->bind_param('s', $email);
 
-        $query->execute();
-        $query->bind_result($id, $hashed_password);
-        $query->fetch();
+            $query->execute();
+            $query->bind_result($id, $hashed_password);
+            $query->fetch();
+        */
 
-        if ($id && password_verify($password, $hashed_password) ) {
-            $_SESSION['userId'] = $id;
-            header("Location: /mounira/quiz/auth/profile.php");
+        $dbConnection = mysqli_connect("172.18.0.2", "root", "root", "quiz");
+        $query = "SELECT `id`, `password` FROM users WHERE email = '{$email}'";
+        $request = mysqli_query($dbConnection, $query);
+
+        $response = mysqli_fetch_assoc($request);
+    
+        /* Close the connection as soon as it's no longer needed */
+        mysqli_close($dbConnection);
+
+        // if ($id && password_verify($password, $hashed_password) ) {
+        //     $_SESSION['userId'] = $id;
+        //     header("Location: /mounira/quiz/auth/profile.php");
+        // }
+
+        if (! empty($response['id']) && password_verify($password, $response['password']) ) {
+            $_SESSION['userId'] = $response['id'];
+            header("Location: /mounira/quiz/admin");
         }
-
-        $query->close();
-        $dbConnection->close();
 
     }
 
