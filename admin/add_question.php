@@ -8,20 +8,45 @@ session_start();
         exit;
     }
 
+    function escape(string $string): string
+    {
+        return htmlspecialchars($string);
+    }
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $quizId = $_POST['quiz_id'];
-        $questionText = $_POST['question_text'];
+        $questionText = escape($_POST['question_text']);
         $options = $_POST['options'];
         $correctOption = $_POST['correct_option'];
 
-
-
         // save question_text on questions table in DB
+        $dbConnection = mysqli_connect("172.18.0.2", "root", "root", "quiz");
+        $query = "INSERT INTO questions (`quiz_id`, `question_text`) VALUES ('{$quizId}', '{$questionText}')";
+        $request = mysqli_query($dbConnection, $query);
+        
+        // questionId 
+        $questionId = mysqli_insert_id($dbConnection);
 
+        foreach ($options as $index => $option) {
+
+            if(empty($option)) {
+                continue;
+            }
+
+            $isCorrect = (int) false;
+
+            if ($correctOption == $index) {
+                $isCorrect = (int) true;
+            }
+
+            $optionQuery = "INSERT INTO options (`question_id`, `option_text`, `is_correct`) VALUES ({$questionId}, '{$option}', {$isCorrect})";
+            $request = mysqli_query($dbConnection, $optionQuery);
+
+        }
+
+        /* Close the connection as soon as it's no longer needed */
+        mysqli_close($dbConnection);
         // collect question id to save with question options
-
-
-
 
 
 
@@ -85,11 +110,11 @@ session_start();
         <div>
             <label for="correct-value">Correct answer</label>
             <select name="correct_option" id="correct-value">
-                <option value="1">Option one</option>
-                <option value="2">Option two</option>
-                <option value="3">Option three</option>
-                <option value="4">Option four</option>
-                <option value="5">Option five</option>
+                <option value="0">Option one</option>
+                <option value="1">Option two</option>
+                <option value="2">Option three</option>
+                <option value="3">Option four</option>
+                <option value="4">Option five</option>
             </select>
         </div>
 
