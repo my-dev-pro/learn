@@ -52,8 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
     
-    $options_query = "INSERT INTO user_quizzes (user_id, quiz_id, score) VALUES ({$_SESSION['userId']}, {$quiz_id}, $score)";
-    $option_request = mysqli_query($dbConnection, $options_query);
+    $score_query = "INSERT INTO user_quizzes (user_id, quiz_id, score) VALUES ({$_SESSION['userId']}, {$quiz_id}, $score)";
+    $score_request = mysqli_query($dbConnection, $score_query);
     mysqli_close($dbConnection);
 
 }
