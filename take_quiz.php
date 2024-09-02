@@ -38,15 +38,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $score = 0;
 
+    // starting new DBconnection to save the score
+    $dbConnection = mysqli_connect("172.19.0.2", "root", "root", "quiz");
+
     foreach ($options as $item) {
         if ($answer == $item['id']) {
             if ($item['is_correct']) {
+                $score++;
                 echo '<h3 style="background-color: green;">Answer is Correct.</h3>';
             } else {
                 echo '<h3 style="background-color: red;">Answer is wrong.</h3>';
             }
         }
     }
+    
+    $options_query = "INSERT INTO user_quizzes (user_id, quiz_id, score) VALUES ({$_SESSION['userId']}, {$quiz_id}, $score)";
+    $option_request = mysqli_query($dbConnection, $options_query);
+    mysqli_close($dbConnection);
 
 }
 

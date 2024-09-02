@@ -1,6 +1,12 @@
 <?php
+    // check if vistor authorized
+    session_start();
 
-// TODO: check if vistor authorized
+    // check if old session is still open
+    if (!isset($_SESSION["userId"])) {
+        header("Location: /mounira/quiz/auth/login.php");
+        exit();
+    }
 
 // TODO: Fetch all quizees score to the admin page
 
