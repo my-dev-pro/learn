@@ -2,66 +2,60 @@
 
 session_start();
 
-    // check if old session is still open
-    if (! isset($_SESSION['userId'])) {
-        header("Location: /mounira/quiz/auth/login.php");
-        exit;
-    }
+// check if old session is still open
+if (!isset($_SESSION["userId"])) {
+    header("Location: /mounira/quiz/auth/login.php");
+    exit();
+}
 
-    function escape(string $string): string
-    {
-        return htmlspecialchars($string);
-    }
+function escape(string $string): string
+{
+    return htmlspecialchars($string);
+}
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $quizId = $_POST['quiz_id'];
-        $questionText = escape($_POST['question_text']);
-        $options = $_POST['options'];
-        $correctOption = $_POST['correct_option'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $quizId = $_POST["quiz_id"];
+    $questionText = escape($_POST["question_text"]);
+    $options = $_POST["options"];
+    $correctOption = $_POST["correct_option"];
 
-        // save question_text on questions table in DB
-        $dbConnection = mysqli_connect("172.18.0.2", "root", "root", "quiz");
-        $query = "INSERT INTO questions (`quiz_id`, `question_text`) VALUES ('{$quizId}', '{$questionText}')";
-        $request = mysqli_query($dbConnection, $query);
-        
-        // questionId 
-        $questionId = mysqli_insert_id($dbConnection);
-
-        foreach ($options as $index => $option) {
-
-            if(empty($option)) {
-                continue;
-            }
-
-            $isCorrect = (int) false;
-
-            if ($correctOption == $index) {
-                $isCorrect = (int) true;
-            }
-
-            $optionQuery = "INSERT INTO options (`question_id`, `option_text`, `is_correct`) VALUES ({$questionId}, '{$option}', {$isCorrect})";
-            $request = mysqli_query($dbConnection, $optionQuery);
-
-        }
-
-        /* Close the connection as soon as it's no longer needed */
-        mysqli_close($dbConnection);
-        // collect question id to save with question options
-
-
-
-    }
-
-    // fetch quiz title form database
-    $dbConnection = mysqli_connect("172.18.0.2", "root", "root", "quiz");
-    $query = "SELECT `id`, `title` FROM quizzes";
+    // save question_text on questions table in DB
+    $dbConnection = mysqli_connect("172.19.0.2", "root", "root", "quiz");
+    $query = "INSERT INTO questions (`quiz_id`, `question_text`) VALUES ('{$quizId}', '{$questionText}')";
     $request = mysqli_query($dbConnection, $query);
 
-    $response = mysqli_fetch_all($request);
+    // questionId
+    $questionId = mysqli_insert_id($dbConnection);
+
+    foreach ($options as $index => $option) {
+        if (empty($option)) {
+            continue;
+        }
+
+        $isCorrect = (int) false;
+
+        if ($correctOption == $index) {
+            $isCorrect = (int) true;
+        }
+
+        $optionQuery = "INSERT INTO options (`question_id`, `option_text`, `is_correct`) VALUES ({$questionId}, '{$option}', {$isCorrect})";
+        $request = mysqli_query($dbConnection, $optionQuery);
+    }
 
     /* Close the connection as soon as it's no longer needed */
     mysqli_close($dbConnection);
+    // collect question id to save with question options
+}
 
+// fetch quiz title form database
+$dbConnection = mysqli_connect("172.19.0.2", "root", "root", "quiz");
+$query = "SELECT `id`, `title` FROM quizzes";
+$request = mysqli_query($dbConnection, $query);
+
+$response = mysqli_fetch_all($request);
+
+/* Close the connection as soon as it's no longer needed */
+mysqli_close($dbConnection);
 ?>
 
 <h2>Create questions</h2>
@@ -70,11 +64,9 @@ session_start();
     <form method="POST">
         <div>
             <select name="quiz_id" required>
-                <?php
-                    foreach ($response as $title) {
-                        echo "<option value='{$title[0]}'>{$title[1]}</option>";
-                    }
-                ?>
+                <?php foreach ($response as $title) {
+                    echo "<option value='{$title[0]}'>{$title[1]}</option>";
+                } ?>
             </select>
         </div>
 

@@ -2,39 +2,39 @@
 
 session_start();
 
-    // check if old session is still open
-    if (! isset($_SESSION['userId'])) {
-        header("Location: /mounira/quiz/auth/login.php");
-        exit;
-    }
+// check if old session is still open
+if (!isset($_SESSION["userId"])) {
+    header("Location: /mounira/quiz/auth/login.php");
+    exit();
+}
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $title = $_POST['title'];
-        $description = $_POST['description'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $title = $_POST["title"];
+    $description = $_POST["description"];
 
-        // connect database
-        $dbConnection = mysqli_connect("172.18.0.2", "root", "root", "quiz");
+    // connect database
+    $dbConnection = mysqli_connect("172.19.0.2", "root", "root", "quiz");
 
-        $query = "INSERT INTO quizzes (`title`, `description`) VALUES ('{$title}', '{$description}')";
+    $query = "INSERT INTO quizzes (`title`, `description`) VALUES ('{$title}', '{$description}')";
 
-        $request = mysqli_query($dbConnection, $query);
-   
-        /* Close the connection as soon as it's no longer needed */
-        mysqli_close($dbConnection);
-        
-        echo $request ? 'Quiz created successfully.' : 'Error: ' . $dbConnection->error;
+    $request = mysqli_query($dbConnection, $query);
 
-    }
+    /* Close the connection as soon as it's no longer needed */
+    mysqli_close($dbConnection);
 
-    // condistion ? show value : show another value
+    echo $request
+        ? "Quiz created successfully."
+        : "Error: " . $dbConnection->error;
+}
 
-    // $username = 'mounira';
+// condistion ? show value : show another value
 
-    // echo $username ? $username : 'user Not found';
+// $username = 'mounira';
 
-    // nullablity checking
-    // echo $username ?? 'user Not found';
+// echo $username ? $username : 'user Not found';
 
+// nullablity checking
+// echo $username ?? 'user Not found';
 ?>
 
 <h1>Create New Quiz</h1>

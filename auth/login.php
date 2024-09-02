@@ -1,19 +1,19 @@
 <?php
-    session_start();
+session_start();
 
-    // check if old session is still open
-    if (!empty($_SESSION['userId'])) {
-        header("Location: /mounira/quiz/auth/profile.php");
-        exit;
-    }
+// check if old session is still open
+if (!empty($_SESSION["userId"])) {
+    header("Location: /mounira/quiz/auth/profile.php");
+    exit();
+}
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST["email"];
+    $password = $_POST["password"];
 
-        // using instance of mysqli class
-        /*
-            $dbConnection = new mysqli('172.18.0.3', 'root', 'root', 'quiz');
+    // using instance of mysqli class
+    /*
+            $dbConnection = new mysqli('172.19.0.2', 'root', 'root', 'quiz');
 
             $query = $dbConnection->prepare("SELECT `id`, `password` FROM users WHERE email = ?");
             $query->bind_param('s', $email);
@@ -23,27 +23,28 @@
             $query->fetch();
         */
 
-        $dbConnection = mysqli_connect("172.18.0.2", "root", "root", "quiz");
-        $query = "SELECT `id`, `password` FROM users WHERE email = '{$email}'";
-        $request = mysqli_query($dbConnection, $query);
+    $dbConnection = mysqli_connect("172.19.0.2", "root", "root", "quiz");
+    $query = "SELECT `id`, `password` FROM users WHERE email = '{$email}'";
+    $request = mysqli_query($dbConnection, $query);
 
-        $response = mysqli_fetch_assoc($request);
-    
-        /* Close the connection as soon as it's no longer needed */
-        mysqli_close($dbConnection);
+    $response = mysqli_fetch_assoc($request);
 
-        // if ($id && password_verify($password, $hashed_password) ) {
-        //     $_SESSION['userId'] = $id;
-        //     header("Location: /mounira/quiz/auth/profile.php");
-        // }
+    /* Close the connection as soon as it's no longer needed */
+    mysqli_close($dbConnection);
 
-        if (! empty($response['id']) && password_verify($password, $response['password']) ) {
-            $_SESSION['userId'] = $response['id'];
-            header("Location: /mounira/quiz/admin");
-        }
+    // if ($id && password_verify($password, $hashed_password) ) {
+    //     $_SESSION['userId'] = $id;
+    //     header("Location: /mounira/quiz/auth/profile.php");
+    // }
 
+    if (
+        !empty($response["id"]) &&
+        password_verify($password, $response["password"])
+    ) {
+        $_SESSION["userId"] = $response["id"];
+        header("Location: /mounira/quiz/admin");
     }
-
+}
 ?>
 
 <h1>Login page</h1>
@@ -59,5 +60,5 @@
 
 <div>
     <span>If new user please register form </span>
-    <a href="register.php">Register page</a>
+    <a href="auth/register.php">Register page</a>
 </div>
